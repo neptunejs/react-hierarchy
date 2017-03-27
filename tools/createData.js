@@ -4,7 +4,7 @@ import distanceMatrix from 'ml-distance-matrix';
 
 export default function createData(n = 10) {
 
-    let start = 'A'.charCodeAt(0);
+    let start = 0;
     let date = Date.now();
 
     const data = [];

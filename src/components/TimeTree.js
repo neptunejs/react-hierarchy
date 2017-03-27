@@ -1,9 +1,17 @@
 import React from 'react';
 import {TimeAxis} from 'react-axis';
 import {scaleTime} from 'd3-scale';
+import {tree as d3Tree} from 'd3-hierarchy'
 
 export default function TimeTree({width, height, data}) {
-    const {root, leaf} = addY(data);
+    const {root, leaf} = getRootAndLeaf(data);
+
+    const tree = d3Tree()
+        .size([1000, 1000])
+        .separation(() => 1);
+
+    tree(data);
+
     const beginTime = root.data.time;
     const endTime = leaf.data.time;
 
@@ -12,8 +20,8 @@ export default function TimeTree({width, height, data}) {
         .range([0, 1000]);
 
     root.each((node) => {
+        node.y = node.x;
         node.x = scale(node.data.time);
-        node.y = node.y * 100
     });
 
     function getElements(root) {
@@ -43,7 +51,7 @@ export default function TimeTree({width, height, data}) {
         <svg width={width} height={height} viewBox="0 0 1000 1100"
              xmlns="http://www.w3.org/2000/svg" style={{overflow: 'visible'}}>
             <svg x="0" y="50" width="1000" height="1000"
-                 viewBox="0 -500 1000 1000" style={{overflow: 'visible'}}>
+                 viewBox="0 0 1000 1000" style={{overflow: 'visible'}}>
                 <g>
                     {circles}
                 </g>
@@ -60,40 +68,16 @@ export default function TimeTree({width, height, data}) {
     );
 }
 
-function addY(data, yValue = 0) {
+function getRootAndLeaf(data) {
     const root = data;
     const leaves = data.leaves();
-    let mostRecentLeave = null;
+    let mostRecentLeaf = null;
     let mostRecentDate = 0;
     for (const leave of leaves) {
         if (leave.data.time > mostRecentDate) {
             mostRecentDate = leave.data.time;
-            mostRecentLeave = leave;
+            mostRecentLeaf = leave;
         }
     }
-    const path = root.path(mostRecentLeave);
-    path.forEach((node, index) => {
-        node.y = yValue;
-        let newY = yValue;
-        if (node.children) {
-            for (const child of node.children) {
-                if (child !== path[index + 1]) {
-                    newY = increment(newY);
-                    addY(child, newY);
-                }
-            }
-        }
-    });
-    return {root, leaf: mostRecentLeave};
-}
-
-function increment(y) {
-    switch (Math.sign(y)) {
-        case 1:
-            return -y;
-        case -1:
-            return -y + 1;
-        case 0:
-            return y + 1;
-    }
+    return {root, leaf: mostRecentLeaf};
 }
