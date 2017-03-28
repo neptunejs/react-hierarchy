@@ -4,12 +4,14 @@ import ReactDOM from 'react-dom';
 import createData from '../../tools/createData';
 import {TimeTree} from '../../src';
 
+const initialValue = 0;
+
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: '0',
-            data: createData(0)
+            value: String(initialValue),
+            data: createData(initialValue)
         };
     }
 

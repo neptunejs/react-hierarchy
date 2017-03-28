@@ -58,6 +58,7 @@
     "license": "MIT",
     "dependencies": {
         "d3-axis": "^1.0.6",
+        "d3-flextree-v4": "^1.0.1",
         "d3-hierarchy": "^1.1.4",
         "d3-scale": "^1.0.5",
         "d3-selection": "^1.0.5",
