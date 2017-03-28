@@ -2,23 +2,32 @@ import {stratify} from 'd3-hierarchy';
 import euclideanDistance from 'ml-distance-euclidean';
 import distanceMatrix from 'ml-distance-matrix';
 
+import fixedData from '../data.json';
+
 export default function createData(n = 10) {
 
-    let start = 0;
-    let date = Date.now();
+    let data, distance;
 
-    const data = [];
-    for (var i = 0; i < n; i++) {
-        data.push({
-            name: String.fromCharCode(start),
-            time: date,
-            value: getRandomData()
-        });
-        start++;
-        date += 1000 * 60 * 60 * (Math.ceil(Math.random() * 500));
+    if (n === 0) {
+        data = fixedData.data;
+        distance = fixedData.distance;
+    } else {
+        let start = 0;
+        let date = Date.now();
+
+        data = [];
+        for (var i = 0; i < n; i++) {
+            data.push({
+                name: String.fromCharCode(start),
+                time: date,
+                value: getRandomData()
+            });
+            start++;
+            date += 1000 * 60 * 60 * (Math.ceil(Math.random() * 500));
+        }
+
+        distance = distanceMatrix(data.map(el => el.value), euclideanDistance);
     }
-
-    const distance = distanceMatrix(data.map(el => el.value), euclideanDistance);
 
     const hierarchy = stratify()
         .id(el => el.name)
