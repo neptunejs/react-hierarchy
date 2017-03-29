@@ -38,6 +38,7 @@
         "babel-preset-env": "^1.2.2",
         "babel-preset-react": "^6.23.0",
         "css-loader": "^0.27.3",
+        "d3-hierarchy": "^1.1.4",
         "eslint": "^3.18.0",
         "eslint-config-cheminfo": "^1.7.0",
         "eslint-config-neptun-react": "^1.0.1",
@@ -57,12 +58,8 @@
     "repository": "neptunjs/time-hierarchy",
     "license": "MIT",
     "dependencies": {
-        "d3-axis": "^1.0.6",
         "d3-flextree-v4": "^1.0.1",
-        "d3-hierarchy": "^1.1.4",
         "d3-scale": "^1.0.5",
-        "d3-selection": "^1.0.5",
-        "react-axis": "^0.2.1",
-        "underscore": "^1.8.3"
+        "react-axis": "^0.2.2"
     }
 }
