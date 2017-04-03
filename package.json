@@ -60,6 +60,8 @@
     "dependencies": {
         "d3-flextree-v4": "^1.0.1",
         "d3-scale": "^1.0.5",
+        "d3-selection": "^1.0.5",
+        "d3-transition": "^1.0.4",
         "react-axis": "^0.2.2"
     }
 }
