@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 import createData from '../../tools/createData';
 import TimeTreeD3 from '../../src/components/TimeTreeD3';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const initialValue = 0;
 
@@ -11,17 +13,46 @@ class App extends Component {
         super(props);
         this.state = {
             value: String(initialValue),
-            data: createData(initialValue)
+            data: createData(initialValue),
+            startDate: '',
+            endDate: ''
         };
     }
 
     render() {
         return (
             <div>
-                <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)} />
-                <TimeTreeD3 data={this.state.data} width={800} height={880} />
+                <TimeTreeD3
+                    startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : this.state.startDate}
+                    endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : this.state.endDate}
+                    data={this.state.data}
+                    width={800}
+                    height={880}
+                />
+                <br/>
+                <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)}/>
+                <DatePicker
+                    selected={this.state.startDate}
+                    onChange={this.changeStartDate.bind(this)}
+                />
+                <DatePicker
+                    selected={this.state.endDate}
+                    onChange={this.changeEndDate.bind(this)}
+                />
             </div>
         );
+    }
+
+    changeStartDate(value) {
+        this.setState({
+            startDate: value
+        })
+    }
+
+    changeEndDate(value) {
+        this.setState({
+            endDate: value
+        })
     }
 
     changeValue(value) {
@@ -40,6 +71,7 @@ class App extends Component {
 }
 
 ReactDOM.render(
-    <App />,
+    <App />
+    ,
     document.getElementById('example')
 );

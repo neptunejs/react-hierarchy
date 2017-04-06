@@ -62,6 +62,7 @@
         "d3-scale": "^1.0.5",
         "d3-selection": "^1.0.5",
         "d3-transition": "^1.0.4",
-        "react-axis": "^0.2.2"
+        "react-axis": "^0.2.2",
+        "react-datepicker": "^0.44.0"
     }
 }

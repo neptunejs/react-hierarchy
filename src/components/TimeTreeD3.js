@@ -162,7 +162,21 @@ class TimeTreeD3 extends Component {
 
     }
 
+    buildNodeIndex(data) {
+        this.nodeIndex = new Map();
+        data.each(node => {
+            if(node.data.name) {
+                this.nodeIndex.set(node.data.name, node);
+            }
+        });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(this.props.data !== nextProps.data) this.buildNodeIndex(nextProps.data);
+    }
+
     componentDidMount() {
+        this.buildNodeIndex(this.props.data);
         this.d3Render(RENDER_NEW_DATA);
     }
 
@@ -172,8 +186,13 @@ class TimeTreeD3 extends Component {
 
     getRenderType() {
         if (!this.previousRoot) return RENDER_NEW_DATA;
-        if (this.root.ancestors().slice(1).indexOf(this.previousRoot) > -1) return RENDER_CHILD_DATA;
-        if (this.previousRoot.ancestors().indexOf(this.root) > -1) return RENDER_PARENT_DATA;
+        const root = this.nodeIndex.get(this.root.data.name);
+        const previousRoot = this.nodeIndex.get(this.previousRoot.data.name);
+
+        if(!root || !previousRoot) return RENDER_NEW_DATA;
+
+        if (root.ancestors().slice(1).indexOf(previousRoot) > -1) return RENDER_CHILD_DATA;
+        if (previousRoot.ancestors().indexOf(root) > -1) return RENDER_PARENT_DATA;
         return RENDER_NEW_DATA;
     }
 
@@ -190,10 +209,9 @@ class TimeTreeD3 extends Component {
 
         if(this.props.startTime) {
             let children = hierarchy.children(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
-            // children = children.map(node => node.copy());
             this.root = d3Hierarchy({
                 data: {
-                    name: 'pseudo node',
+                    name: 'start node',
                     time: this.props.startTime,
                     fakeRoot: true
                 },
