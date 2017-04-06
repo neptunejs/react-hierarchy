@@ -4,6 +4,8 @@ import {scaleTime, scaleLinear} from 'd3-scale';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import flexTree from 'd3-flextree-v4';
+import hierarchy from '../util/hierarchy';
+import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 
 const UPDATE_TRANSITION_DURATION = 1000;
 const ENTER_EXIT_TRANSITION_DURATION = 500;
@@ -38,7 +40,7 @@ class TimeTreeD3 extends Component {
             updateTransitionDuration = 0;
             enterExitTransitionDuration = 0;
         }
-        const {root, leaf, minx, maxx} = processData(this.root);
+        const {root, leaf, minx, maxx} = this.processed;
 
         const beginTime = root.data.time;
         const endTime = leaf.data.time;
@@ -180,10 +182,34 @@ class TimeTreeD3 extends Component {
         const {width, height, data} = this.props;
         this.previousRoot = this.root;
         this.root = findRootNode(data, this.state.clickedNode);
-        const {leaf} = processData(this.root);
+        hierarchy.untruncate(this.previousRoot);
+        if(this.props.endTime) {
+            hierarchy.truncate(this.root, node => node.data.time > this.props.endTime);
+        }
+
+
+        if(this.props.startTime) {
+            let children = hierarchy.children(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
+            // children = children.map(node => node.copy());
+            this.root = d3Hierarchy({
+                data: {
+                    name: 'pseudo node',
+                    time: this.props.startTime,
+                    fakeRoot: true
+                },
+                children: children
+            });
+
+            // Normalize the hierarchy, since it was built from Node instances
+            this.root.eachBefore(node => node.data = node.data.data);
+        }
+
+        this.processed = processData(this.root);
+
+
 
         const beginTime = this.root.data.time;
-        const endTime = leaf.data.time;
+        const endTime = this.processed.leaf.data.time;
 
         return (
             <svg width={width} height={height} viewBox="0 0 1000 1100"
@@ -266,7 +292,7 @@ function findRootNode(data, clickedNode) {
     if (clickedNode === null) return data;
     let found = false;
     data.each(node => {
-        if (node === clickedNode) found = true;
+        if (node.data === clickedNode.data) found = true;
     });
     if (found) return clickedNode;
     return data;
