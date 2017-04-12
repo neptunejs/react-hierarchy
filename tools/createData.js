@@ -18,7 +18,7 @@ export default function createData(n = 10) {
         data = [];
         for (var i = 0; i < n; i++) {
             data.push({
-                name: String.fromCharCode(start),
+                name: `${i}`,
                 time: date,
                 value: getRandomData()
             });
