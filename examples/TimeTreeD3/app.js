@@ -68,14 +68,16 @@ class App extends Component {
         };
 
         return (
-            <div onDoubleClick={() => this.setState({
-                data: createData(parseInt(this.state.value)),
-                transition: {
-                    enter: {wait: UPDATE_DURATION, duration: ENTER_EXIT_DURATION},
-                    update: {wait: 0, duration: UPDATE_DURATION},
-                    exit: {wait: 0, duration: 0}
-                }
-            })}>
+            <div onDoubleClick={event => {
+                this.setState({
+                    data: createData(parseInt(this.state.value)),
+                    transition: {
+                        enter: {wait: UPDATE_DURATION, duration: ENTER_EXIT_DURATION},
+                        update: {wait: 0, duration: UPDATE_DURATION},
+                        exit: {wait: 0, duration: 0}
+                    }
+                });
+            }}>
                 <TimeTreeD3
                     onNodeClick={node => this.setState({
                         data: node,

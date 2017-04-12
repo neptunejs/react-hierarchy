@@ -3,6 +3,7 @@
 import {createSelector} from 'reselect';
 import flexTree from 'd3-flextree-v4';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
+import {scaleTime, scaleLinear} from 'd3-scale';
 import {
     truncate,
     children as childrenHierarchy,
@@ -100,5 +101,25 @@ function processData(data) {
         if (node.y < miny) miny = node.y;
     });
 
-    return {root, leaf, minx, maxx, miny, maxy};
+
+
+    const beginTime = root.data.time;
+    const endTime = leaf.data.time;
+
+    const scaleX = scaleLinear()
+        .domain([minx, maxx])
+        .range([0, 1000]);
+
+    const scale = scaleTime()
+        .domain([beginTime, endTime])
+        .range([0, 1000]);
+
+    root.each((node) => {
+        node.realY = scaleX(node.x);
+        node.realX = scale(node.data.time);
+    });
+
+
+
+    return {root, leaf};
 }

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {TimeAxis} from 'react-axis';
-import {scaleTime, scaleLinear} from 'd3-scale';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import ReactDOM from 'react-dom';
@@ -20,25 +19,8 @@ class TimeTreeD3 extends Component {
 
     d3Render() {
         const {transition} = this.props;
-        const {root, leaf, minx, maxx} = this.processed;
+        const root = this.root;
 
-        const beginTime = root.data.time;
-        const endTime = leaf.data.time;
-
-        const scaleX = scaleLinear()
-            .domain([minx, maxx])
-            .range([0, 1000]);
-
-        const scale = scaleTime()
-            .domain([beginTime, endTime])
-            .range([0, 1000]);
-
-        root.each((node) => {
-            // node.y = scaleX(node.x);//node.x;
-            node.realY = scaleX(node.x);
-            node.realX = scale(node.data.time);
-            // node.x = scale(node.data.time);
-        });
 
         const svg = this.refs.svgTree;
 
@@ -184,11 +166,7 @@ class TimeTreeD3 extends Component {
 
     render() {
         const {width, height} = this.props;
-        let {data} = this.props;
-
         this.previousRoot = this.root;
-        this.root = data;
-
         this.computedTree = treeSelector(this.props);
         this.root = this.computedTree.root;
         this.processed = this.computedTree.processed;
