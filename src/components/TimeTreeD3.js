@@ -233,17 +233,22 @@ class TimeTreeD3 extends Component {
         this.previousRoot = this.root;
         this.root = findRootNode(data, this.state.clickedNode);
         untruncate(this.previousRoot);
-        if (this.props.endTime) {
-            truncate(this.root, node => node.data.time > this.props.endTime);
+
+        let {startTime, endTime} = this.props;
+
+        if (endTime) {
+            endTime = new Date(endTime).getTime();
+            truncate(this.root, node => node.data.time > endTime);
         }
 
 
-        if (this.props.startTime) {
-            let children = childrenHierarchy(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
+        if (startTime) {
+            startTime = new Date(startTime).getTime();
+            let children = childrenHierarchy(this.root, node => node.data.time > startTime, {depth: 'first'});
             this.root = d3Hierarchy({
                 data: {
                     name: 'start node',
-                    time: this.props.startTime,
+                    time: startTime,
                     fakeRoot: true
                 },
                 children: children
@@ -256,8 +261,8 @@ class TimeTreeD3 extends Component {
         this.processed = processData(this.root);
 
 
-        const beginTime = this.root.data.time;
-        const endTime = this.processed.leaf.data.time;
+        const beginTimeScale = this.root.data.time;
+        const endTimeScale = this.processed.leaf.data.time;
 
         return (
             <svg width={width} height={height} viewBox="0 0 1000 1100"
@@ -271,8 +276,8 @@ class TimeTreeD3 extends Component {
                     <g id="nodes" />
                 </svg>
                 <svg x="0" y="1050" width="1000" height="50" viewBox="0 0 1000 50">
-                    <TimeAxis position="bottom" beginTime={beginTime}
-                              endTime={endTime}
+                    <TimeAxis position="bottom" beginTime={beginTimeScale}
+                              endTime={endTimeScale}
                               width={1000} height={50}
                     />
                 </svg>
