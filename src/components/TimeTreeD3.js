@@ -4,9 +4,14 @@ import {scaleTime, scaleLinear} from 'd3-scale';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import flexTree from 'd3-flextree-v4';
-import hierarchy from '../util/hierarchy';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import ReactDom from 'react-dom';
+
+import {
+    untruncate,
+    truncate,
+    children as childrenHierarchy
+} from '../util/hierarchy';
 
 const UPDATE_TRANSITION_DURATION = 1000;
 const ENTER_EXIT_TRANSITION_DURATION = 500;
@@ -210,14 +215,14 @@ class TimeTreeD3 extends Component {
         const {width, height, data} = this.props;
         this.previousRoot = this.root;
         this.root = findRootNode(data, this.state.clickedNode);
-        hierarchy.untruncate(this.previousRoot);
+        untruncate(this.previousRoot);
         if (this.props.endTime) {
-            hierarchy.truncate(this.root, node => node.data.time > this.props.endTime);
+            truncate(this.root, node => node.data.time > this.props.endTime);
         }
 
 
         if (this.props.startTime) {
-            let children = hierarchy.children(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
+            let children = childrenHierarchy(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
             this.root = d3Hierarchy({
                 data: {
                     name: 'start node',
