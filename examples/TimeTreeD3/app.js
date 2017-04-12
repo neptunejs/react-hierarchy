@@ -5,15 +5,31 @@ import createData from '../../tools/createData';
 import TimeTreeD3 from '../../src/components/TimeTreeD3';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import PieChart from './PieChart';
+
+var slices = [
+    { color: '#468966', value: 10 },
+    { color: '#FFF0A5', value: 20 },
+    { color: '#FFB03B', value: 30 },
+    { color: '#B64926', value: 40 },
+    { color: '#8E2800', value: 50 },
+];
 
 const initialValue = 0;
 
-const nodeRenderer = props => {
-    console.log(props);
+const nodeLabelRenderer = props => {
     return (
         <g>
             <circle r="4"/>
             <text x="5" y="0" transform="rotate(-45)">{props.data.data.name}</text>
+        </g>
+    );
+};
+
+const nodePieChartRenderer = props => {
+    return (
+        <g>
+            <PieChart size={20} slices={slices}/>
         </g>
     )
 };
@@ -33,7 +49,7 @@ class App extends Component {
         return (
             <div>
                 <TimeTreeD3
-                    nodeRenderer={nodeRenderer}
+                    nodeRenderer={nodePieChartRenderer}
                     startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : null}
                     endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : null}
                     data={this.state.data}

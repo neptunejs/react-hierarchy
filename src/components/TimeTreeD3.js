@@ -63,6 +63,9 @@ class TimeTreeD3 extends Component {
 
         const svg = this.refs.svgTree;
 
+        select(svg).append('g').attr('id', 'links');
+        select(svg).append('g').attr('id', 'nodes');
+
         const nodes = [];
         const links = [];
         root.each(node => {
@@ -102,7 +105,7 @@ class TimeTreeD3 extends Component {
                 .attr('y2', node => node.realY);
         };
 
-        const d3Links = select(svg)
+        const d3Links = select(svg).select('#links')
             .selectAll('g.link')
             .data(links, link => link.data.name);
 
@@ -132,7 +135,7 @@ class TimeTreeD3 extends Component {
             .remove();
 
 
-        const gCircle = select(svg)
+        const gCircle = select(svg).select('#nodes')
             .selectAll('g.node')
             .data(nodes, node => node.data.name);
 
@@ -142,12 +145,11 @@ class TimeTreeD3 extends Component {
         // New node
         let circles = gCircle.enter()
             .append('g')
-            .attr('class', 'node')
-            .attr('fill-opacity', 0);
+            .attr('class', 'node');
 
-
-        circles.transition().duration(enterExitTransitionWait).transition().duration(enterExitTransitionDuration)
-            .attr('fill-opacity', 1);
+        // Node transition
+        circles.attr('opacity', 0).transition().duration(enterExitTransitionWait).transition().duration(enterExitTransitionDuration)
+            .attr('opacity', 1);
 
 
         circles = circles.append('g')
@@ -165,7 +167,7 @@ class TimeTreeD3 extends Component {
         gCircle.exit()
             .transition().duration(enterExitTransitionWait)
             .transition().duration(enterExitTransitionDuration)
-            .attr('fill-opacity', 0).remove();
+            .attr('opacity', 0).remove();
 
     }
 
