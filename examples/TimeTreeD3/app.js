@@ -8,14 +8,24 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const initialValue = 0;
 
+const nodeRenderer = props => {
+    console.log(props);
+    return (
+        <g>
+            <circle r="4"/>
+            <text x="5" y="0" transform="rotate(-45)">{props.data.data.name}</text>
+        </g>
+    )
+};
+
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             value: String(initialValue),
             data: createData(initialValue),
-            startDate: '',
-            endDate: ''
+            startDate: null,
+            endDate: null
         };
     }
 
@@ -23,11 +33,13 @@ class App extends Component {
         return (
             <div>
                 <TimeTreeD3
-                    startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : this.state.startDate}
-                    endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : this.state.endDate}
+                    nodeRenderer={nodeRenderer}
+                    startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : null}
+                    endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : null}
                     data={this.state.data}
                     width={800}
                     height={880}
+
                 />
                 <br/>
                 <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)}/>

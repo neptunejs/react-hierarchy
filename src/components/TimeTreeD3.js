@@ -6,6 +6,7 @@ import 'd3-transition';
 import flexTree from 'd3-flextree-v4';
 import hierarchy from '../util/hierarchy';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
+import ReactDom from 'react-dom';
 
 const UPDATE_TRANSITION_DURATION = 1000;
 const ENTER_EXIT_TRANSITION_DURATION = 500;
@@ -71,12 +72,19 @@ class TimeTreeD3 extends Component {
             }
         });
 
+        const that = this;
+
         const updateCircle = el => {
-            return el
-                .attr('cx', node => node.realX)
-                .attr('cy', node => node.realY)
-                .attr('r', 5);
+            return el.select(function (d) {
+                ReactDom.render(
+                    <that.props.nodeRenderer data={d}/>
+                    , this);
+                return this;
+            }).attr('transform', d => {
+                return `translate(${d.realX}, ${d.realY})`;
+            });
         };
+
 
         const updateLine1 = el => {
             return el
@@ -128,10 +136,9 @@ class TimeTreeD3 extends Component {
             .selectAll('g.node')
             .data(nodes, node => node.data.name);
 
+
         // Update node
-        updateCircle(gCircle.select('circle').transition().duration(updateTransitionWait).transition().duration(updateTransitionDuration));
-
-
+        updateCircle(gCircle.select('g').transition().duration(updateTransitionWait).transition().duration(updateTransitionDuration));
         // New node
         let circles = gCircle.enter()
             .append('g')
@@ -143,7 +150,7 @@ class TimeTreeD3 extends Component {
             .attr('fill-opacity', 1);
 
 
-        circles = circles.append('circle')
+        circles = circles.append('g')
             .on('click', d => {
                 this.setState({
                     clickedNode: d
@@ -165,14 +172,14 @@ class TimeTreeD3 extends Component {
     buildNodeIndex(data) {
         this.nodeIndex = new Map();
         data.each(node => {
-            if(node.data.name) {
+            if (node.data.name) {
                 this.nodeIndex.set(node.data.name, node);
             }
         });
     }
 
     componentWillReceiveProps(nextProps) {
-        if(this.props.data !== nextProps.data) this.buildNodeIndex(nextProps.data);
+        if (this.props.data !== nextProps.data) this.buildNodeIndex(nextProps.data);
     }
 
     componentDidMount() {
@@ -189,7 +196,7 @@ class TimeTreeD3 extends Component {
         const root = this.nodeIndex.get(this.root.data.name);
         const previousRoot = this.nodeIndex.get(this.previousRoot.data.name);
 
-        if(!root || !previousRoot) return RENDER_NEW_DATA;
+        if (!root || !previousRoot) return RENDER_NEW_DATA;
 
         if (root.ancestors().slice(1).indexOf(previousRoot) > -1) return RENDER_CHILD_DATA;
         if (previousRoot.ancestors().indexOf(root) > -1) return RENDER_PARENT_DATA;
@@ -202,12 +209,12 @@ class TimeTreeD3 extends Component {
         this.previousRoot = this.root;
         this.root = findRootNode(data, this.state.clickedNode);
         hierarchy.untruncate(this.previousRoot);
-        if(this.props.endTime) {
+        if (this.props.endTime) {
             hierarchy.truncate(this.root, node => node.data.time > this.props.endTime);
         }
 
 
-        if(this.props.startTime) {
+        if (this.props.startTime) {
             let children = hierarchy.children(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
             this.root = d3Hierarchy({
                 data: {
@@ -223,7 +230,6 @@ class TimeTreeD3 extends Component {
         }
 
         this.processed = processData(this.root);
-
 
 
         const beginTime = this.root.data.time;
@@ -315,5 +321,14 @@ function findRootNode(data, clickedNode) {
     if (found) return clickedNode;
     return data;
 }
+
+const defaultNodeRenderer = () => <circle r="4"/>;
+
+TimeTreeD3.defaultProps = {
+    nodeRenderer: defaultNodeRenderer,
+    rootRenderer: defaultNodeRenderer,
+    leafRenderer: defaultNodeRenderer
+};
+
 
 export default TimeTreeD3;
