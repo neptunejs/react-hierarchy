@@ -43,7 +43,8 @@ class App extends Component {
             value: String(initialValue),
             data: createData(initialValue),
             startDate: null,
-            endDate: null
+            endDate: null,
+            minimumChildren: 0
         };
     }
 
@@ -59,7 +60,7 @@ class App extends Component {
                     data={this.state.data}
                     width={800}
                     height={880}
-
+                    minimumChildren={this.state.minimumChildren}
                 />
                 <br/>
                 <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)}/>
@@ -71,8 +72,16 @@ class App extends Component {
                     selected={this.state.endDate}
                     onChange={this.changeEndDate.bind(this)}
                 />
+                <br/>
+                Minimum children: <input type="text" value={this.state.minimumChildren} onChange={(e) => this.changeMinimumChildren(e.target.value)} />
             </div>
         );
+    }
+
+    changeMinimumChildren(value) {
+        this.setState({
+            minimumChildren: Number(value) || 0
+        });
     }
 
     changeStartDate(value) {

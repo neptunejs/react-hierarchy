@@ -12,7 +12,8 @@ import {
     truncate,
     children as childrenHierarchy,
     NODE_TYPES,
-    getNodeType
+    getNodeType,
+    minimumChildren
 } from '../util/hierarchy';
 
 const UPDATE_TRANSITION_DURATION = 1000;
@@ -227,7 +228,11 @@ class TimeTreeD3 extends Component {
 
 
     render() {
-        const {width, height, data} = this.props;
+        const {width, height} = this.props;
+        let {data} = this.props;
+        if (this.props.minimumChildren) {
+            data = minimumChildren(data, this.props.minimumChildren);
+        }
         this.previousRoot = this.root;
         this.root = findRootNode(data, this.state.clickedNode);
         untruncate(this.previousRoot);

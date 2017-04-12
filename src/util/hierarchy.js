@@ -43,12 +43,23 @@ export function untruncate(node) {
     return children;
 }
 
+export function minimumChildren(node, minChildren) {
+    const root = node.copy();
+    root.sum(() => 1);
+    root.eachBefore((node) => {
+        if (node.value <= minChildren) {
+            node.children = null;
+        }
+    });
+    return root;
+}
+
 export const NODE_TYPES = {
     ROOT: 'ROOT',
     LEAF: 'LEAF',
     FAKE_ROOT: 'FAKEROOT',
     INTERMEDIATE: 'INTERMEDIATE'
-}
+};
 
 export function getNodeType(node) {
     if(node.fakeRoot) {
