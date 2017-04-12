@@ -43,6 +43,26 @@ export function untruncate(node) {
     return children;
 }
 
+export const NODE_TYPES = {
+    ROOT: 'ROOT',
+    LEAF: 'LEAF',
+    FAKE_ROOT: 'FAKEROOT',
+    INTERMEDIATE: 'INTERMEDIATE'
+}
+
+export function getNodeType(node) {
+    if(node.fakeRoot) {
+        return NODE_TYPES.FAKE_ROOT
+    } else if(node.parent === null) {
+        return NODE_TYPES.ROOT;
+    } else if(!node.children || node.children.length === 0) {
+        return NODE_TYPES.LEAF
+    } else {
+        return NODE_TYPES.INTERMEDIATE;
+    }
+}
+
+
 function shouldGoDeeper(node, options, isMatch) {
     if(options.depth !== undefined) {
         if(typeof options.depth === 'number') {

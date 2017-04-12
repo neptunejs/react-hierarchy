@@ -10,7 +10,9 @@ import ReactDOM from 'react-dom';
 import {
     untruncate,
     truncate,
-    children as childrenHierarchy
+    children as childrenHierarchy,
+    NODE_TYPES,
+    getNodeType
 } from '../util/hierarchy';
 
 const UPDATE_TRANSITION_DURATION = 1000;
@@ -85,13 +87,13 @@ class TimeTreeD3 extends Component {
         const updateCircle = el => {
             return el.select(function (d) {
                 let Renderer = that.props.nodeRenderer;
-                const nodeType = hierarchy.getNodeType(d);
+                const nodeType = getNodeType(d);
                 switch(nodeType) {
-                    case hierarchy.NODE_TYPES.ROOT:
-                    case hierarchy.NODE_TYPES.FAKE_ROOT:
+                    case NODE_TYPES.ROOT:
+                    case NODE_TYPES.FAKE_ROOT:
                         Renderer = that.props.rootRenderer || Renderer;
                         break;
-                    case hierarchy.NODE_TYPES.LEAF:
+                    case NODE_TYPES.LEAF:
                         Renderer = that.props.leafRenderer || Renderer;
                         break;
                     default:
