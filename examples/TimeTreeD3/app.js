@@ -26,6 +26,8 @@ const nodeLabelRenderer = props => {
     );
 };
 
+const simpleRenderer = () => <circle r="4"/>;
+
 const nodePieChartRenderer = props => {
     return (
         <g>
@@ -50,6 +52,8 @@ class App extends Component {
             <div>
                 <TimeTreeD3
                     nodeRenderer={nodePieChartRenderer}
+                    rootRenderer={simpleRenderer}
+                    leafRenderer={nodeLabelRenderer}
                     startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : null}
                     endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : null}
                     data={this.state.data}

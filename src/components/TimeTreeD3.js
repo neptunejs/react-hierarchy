@@ -5,7 +5,7 @@ import {select} from 'd3-selection';
 import 'd3-transition';
 import flexTree from 'd3-flextree-v4';
 import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
-import ReactDom from 'react-dom';
+import ReactDOM from 'react-dom';
 
 import {
     untruncate,
@@ -84,9 +84,22 @@ class TimeTreeD3 extends Component {
 
         const updateCircle = el => {
             return el.select(function (d) {
-                ReactDom.render(
-                    <that.props.nodeRenderer data={d}/>
-                    , this);
+                let Renderer = that.props.nodeRenderer;
+                const nodeType = hierarchy.getNodeType(d);
+                switch(nodeType) {
+                    case hierarchy.NODE_TYPES.ROOT:
+                    case hierarchy.NODE_TYPES.FAKE_ROOT:
+                        Renderer = that.props.rootRenderer || Renderer;
+                        break;
+                    case hierarchy.NODE_TYPES.LEAF:
+                        Renderer = that.props.leafRenderer || Renderer;
+                        break;
+                    default:
+                        // Keep default renderer for intermediate node
+                        break;
+                }
+
+                ReactDOM.render(<Renderer data={d} />, this);
                 return this;
             }).attr('transform', d => {
                 return `translate(${d.realX}, ${d.realY})`;
@@ -332,9 +345,7 @@ function findRootNode(data, clickedNode) {
 const defaultNodeRenderer = () => <circle r="4"/>;
 
 TimeTreeD3.defaultProps = {
-    nodeRenderer: defaultNodeRenderer,
-    rootRenderer: defaultNodeRenderer,
-    leafRenderer: defaultNodeRenderer
+    nodeRenderer: defaultNodeRenderer
 };
 
 
