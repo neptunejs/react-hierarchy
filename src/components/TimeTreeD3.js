@@ -71,9 +71,6 @@ class TimeTreeD3 extends Component {
 
         const svg = this.refs.svgTree;
 
-        select(svg).append('g').attr('id', 'links');
-        select(svg).append('g').attr('id', 'nodes');
-
         const nodes = [];
         const links = [];
         root.each(node => {
@@ -270,6 +267,8 @@ class TimeTreeD3 extends Component {
                  xmlns="http://www.w3.org/2000/svg" style={{overflow: 'visible'}}>
                 <svg x="0" y="25" width="1000" height="1000"
                      viewBox="0 0 1000 1000" style={{overflow: 'visible'}} ref="svgTree">
+                    <g id="links" />
+                    <g id="nodes" />
                 </svg>
                 <svg x="0" y="1050" width="1000" height="50" viewBox="0 0 1000 50">
                     <TimeAxis position="bottom" beginTime={beginTime}
