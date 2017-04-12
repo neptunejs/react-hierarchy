@@ -3,16 +3,12 @@ import {TimeAxis} from 'react-axis';
 import {scaleTime, scaleLinear} from 'd3-scale';
 import {select} from 'd3-selection';
 import 'd3-transition';
-import flexTree from 'd3-flextree-v4';
-import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import ReactDOM from 'react-dom';
+import {treeSelector} from '../selector';
 
 import {
-    truncate,
-    children as childrenHierarchy,
     NODE_TYPES,
-    getNodeType,
-    minimumChildren
+    getNodeType
 } from '../util/hierarchy';
 
 const UPDATE_TRANSITION_DURATION = 1000;
@@ -27,7 +23,6 @@ class TimeTreeD3 extends Component {
         super(props);
         this.previousRoot = null;
         this.root = null;
-        this.shouldCreateTree = true;
     }
 
     d3Render(renderType) {
@@ -193,12 +188,6 @@ class TimeTreeD3 extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.data !== nextProps.data) this.buildNodeIndex(nextProps.data);
-        const props = ['data', 'startTime', 'endTime', 'minimumChildren'];
-        this.shouldCreateTree = props.some(p => {
-            const r = nextProps[p] !== this.props[p];
-            if(r) console.log('prop that changed', p);
-            return r;
-        });
     }
 
     componentDidMount() {
@@ -209,6 +198,11 @@ class TimeTreeD3 extends Component {
     componentDidUpdate() {
         this.d3Render(this.getRenderType());
     }
+
+    shouldComponentUpdate(nextProps) {
+        return treeSelector(nextProps) !== this.computedTree;
+    }
+
 
     getRenderType() {
         if (!this.previousRoot) return RENDER_NEW_DATA;
@@ -222,34 +216,6 @@ class TimeTreeD3 extends Component {
         return RENDER_NEW_DATA;
     }
 
-    updateTree() {
-        if (this.shouldCreateTree || this.previousRoot !== this.root) {
-            if (this.props.minimumChildren) {
-                this.root = minimumChildren(this.root, this.props.minimumChildren);
-            }
-            if (this.props.endTime) {
-                this.root = truncate(this.root, node => node.data.time > this.props.endTime);
-            }
-
-
-            if (this.props.startTime) {
-                let children = childrenHierarchy(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
-                this.root = d3Hierarchy({
-                    data: {
-                        name: 'start node',
-                        time: this.props.startTime,
-                        fakeRoot: true
-                    },
-                    children: children
-                });
-
-                // Normalize the hierarchy, since it was built from Node instances
-                this.root.eachBefore(node => node.data = node.data.data);
-            }
-
-            this.processed = processData(this.root);
-        }
-    }
 
 
     render() {
@@ -258,7 +224,10 @@ class TimeTreeD3 extends Component {
 
         this.previousRoot = this.root;
         this.root = data;
-        this.updateTree();
+
+        this.computedTree = treeSelector(this.props);
+        this.root = this.computedTree.root;
+        this.processed = this.computedTree.processed;
 
         const beginTimeScale = this.root.data.time;
         const endTimeScale = this.processed.leaf.data.time;
@@ -281,64 +250,6 @@ class TimeTreeD3 extends Component {
         );
     }
 }
-
-function processData(data) {
-    const {root, leaf} = getRootAndLeaf(data);
-    // const rootTime = root.data.time;
-
-    const tree = flexTree()
-        .size([1000, 1000])
-        .separation(() => 1)
-        .nodeSize(function (node) {
-            if (!node.parent) return [1, 0];
-            return [1, (node.data.time - node.parent.data.time) / 10000000];
-        });
-
-    data.each(function (node) {
-        var leaves = node.leaves();
-        var max = -Infinity;
-        for (var leaf of leaves) {
-            if (leaf.data.time > max) max = leaf.data.time;
-        }
-        node.maxTime = max;
-    });
-
-    data.sort(function (a, b) {
-        // return a.data.time > b.data.time ? -1 : 1
-        return a.maxTime > b.maxTime ? -1 : 1;
-    });
-
-    tree(data);
-
-    var minx = Infinity;
-    var miny = Infinity;
-    var maxx = -Infinity;
-    var maxy = -Infinity;
-    data.each((node) => {
-        if (node.x > maxx) maxx = node.x;
-        if (node.x < minx) minx = node.x;
-        if (node.y > maxy) maxy = node.y;
-        if (node.y < miny) miny = node.y;
-    });
-
-    return {root, leaf, minx, maxx, miny, maxy};
-}
-
-
-function getRootAndLeaf(data) {
-    const root = data;
-    const leaves = data.leaves();
-    let mostRecentLeaf = null;
-    let mostRecentDate = 0;
-    for (const leave of leaves) {
-        if (leave.data.time > mostRecentDate) {
-            mostRecentDate = leave.data.time;
-            mostRecentLeaf = leave;
-        }
-    }
-    return {root, leaf: mostRecentLeaf};
-}
-
 
 const defaultNodeRenderer = () => <circle r="4"/>;
 
