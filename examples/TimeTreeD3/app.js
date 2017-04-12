@@ -7,6 +7,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PieChart from './PieChart';
 
+const ENTER_EXIT_DURATION = 400;
+const UPDATE_DURATION = 700;
+
 var slices = [
     {color: '#468966', value: 10},
     {color: '#FFF0A5', value: 20},
@@ -65,9 +68,23 @@ class App extends Component {
         };
 
         return (
-            <div onDoubleClick={() => this.setState({data: createData(parseInt(this.state.value))})}>
+            <div onDoubleClick={() => this.setState({
+                data: createData(parseInt(this.state.value)),
+                transition: {
+                    enter: {wait: UPDATE_DURATION, duration: ENTER_EXIT_DURATION},
+                    update: {wait: 0, duration: UPDATE_DURATION},
+                    exit: {wait: 0, duration: 0}
+                }
+            })}>
                 <TimeTreeD3
-                    onNodeClick={node => this.setState({data: node})}
+                    onNodeClick={node => this.setState({
+                        data: node,
+                        transition: {
+                            enter: {wait: UPDATE_DURATION + ENTER_EXIT_DURATION, duration: 0},
+                            update: {wait: ENTER_EXIT_DURATION, duration: UPDATE_DURATION},
+                            exit: {wait: 0, duration: ENTER_EXIT_DURATION}
+                        }
+                    })}
                     nodeRenderer={HoverRenderer(nodePieChartRenderer)}
                     rootRenderer={HoverRenderer(simpleRenderer)}
                     leafRenderer={HoverRenderer(nodeLabelRenderer)}
@@ -77,6 +94,7 @@ class App extends Component {
                     width={800}
                     height={880}
                     minimumChildren={this.state.minimumChildren}
+                    transition={this.state.transition}
                 />
                 <br/>
                 <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)}/>

@@ -11,13 +11,6 @@ import {
     getNodeType
 } from '../util/hierarchy';
 
-const UPDATE_TRANSITION_DURATION = 1000;
-const ENTER_EXIT_TRANSITION_DURATION = 500;
-
-const RENDER_NEW_DATA = 'RENDER_NEW_DATA';
-const RENDER_CHILD_DATA = 'RENDER_CHILD_DATA';
-const RENDER_PARENT_DATA = 'RENDER_PARENT_DATA';
-
 class TimeTreeD3 extends Component {
     constructor(props) {
         super(props);
@@ -25,22 +18,8 @@ class TimeTreeD3 extends Component {
         this.root = null;
     }
 
-    d3Render(renderType) {
-        let updateTransitionWait, enterExitTransitionWait;
-        let updateTransitionDuration = UPDATE_TRANSITION_DURATION;
-        let enterExitTransitionDuration = ENTER_EXIT_TRANSITION_DURATION;
-        if (renderType === RENDER_PARENT_DATA) {
-            updateTransitionWait = 0;
-            enterExitTransitionWait = UPDATE_TRANSITION_DURATION;
-        } else if (renderType === RENDER_CHILD_DATA) {
-            updateTransitionWait = ENTER_EXIT_TRANSITION_DURATION;
-            enterExitTransitionWait = 0;
-        } else {
-            updateTransitionWait = 0;
-            enterExitTransitionWait = 0;
-            updateTransitionDuration = 0;
-            enterExitTransitionDuration = 0;
-        }
+    d3Render() {
+        const {transition} = this.props;
         const {root, leaf, minx, maxx} = this.processed;
 
         const beginTime = root.data.time;
@@ -120,8 +99,8 @@ class TimeTreeD3 extends Component {
             .data(links, link => link.data.name);
 
         // Update
-        updateLine1(d3Links.select('line:nth-child(1)').transition().duration(updateTransitionWait).transition().duration(updateTransitionDuration));
-        updateLine2(d3Links.select('line:nth-child(2)').transition().duration(updateTransitionWait).transition().duration(updateTransitionDuration));
+        updateLine1(d3Links.select('line:nth-child(1)').transition().duration(transition.update.wait).transition().duration(transition.update.duration));
+        updateLine2(d3Links.select('line:nth-child(2)').transition().duration(transition.update.wait).transition().duration(transition.update.duration));
 
         // New
         const gLink = d3Links.enter()
@@ -130,8 +109,8 @@ class TimeTreeD3 extends Component {
             .attr('stroke', 'black')
             .attr('stroke-opacity', 0);
 
-        gLink.transition().duration(enterExitTransitionWait)
-            .transition().duration(enterExitTransitionDuration)
+        gLink.transition().duration(transition.enter.wait)
+            .transition().duration(transition.enter.duration)
             .attr('stroke-opacity', 1);
 
         updateLine1(gLink.append('line'));
@@ -139,8 +118,8 @@ class TimeTreeD3 extends Component {
 
         // Remove
         d3Links.exit()
-            .transition().duration(enterExitTransitionWait)
-            .transition().duration(enterExitTransitionDuration)
+            .transition().duration(transition.exit.wait)
+            .transition().duration(transition.exit.duration)
             .attr('stroke-opacity', 0)
             .remove();
 
@@ -151,14 +130,14 @@ class TimeTreeD3 extends Component {
 
 
         // Update node
-        updateCircle(gCircle.select('g').transition().duration(updateTransitionWait).transition().duration(updateTransitionDuration));
+        updateCircle(gCircle.select('g').transition().duration(transition.update.wait).transition().duration(transition.update.duration));
         // New node
         let circles = gCircle.enter()
             .append('g')
             .attr('class', 'node');
 
         // Node transition
-        circles.attr('opacity', 0).transition().duration(enterExitTransitionWait).transition().duration(enterExitTransitionDuration)
+        circles.attr('opacity', 0).transition().duration(transition.enter.wait).transition().duration(transition.enter.duration)
             .attr('opacity', 1);
 
 
@@ -171,8 +150,8 @@ class TimeTreeD3 extends Component {
 
         // Remove
         gCircle.exit()
-            .transition().duration(enterExitTransitionWait)
-            .transition().duration(enterExitTransitionDuration)
+            .transition().duration(transition.exit.wait)
+            .transition().duration(transition.exit.duration)
             .attr('opacity', 0).remove();
 
     }
@@ -192,31 +171,16 @@ class TimeTreeD3 extends Component {
 
     componentDidMount() {
         this.buildNodeIndex(this.props.data);
-        this.d3Render(RENDER_NEW_DATA);
+        this.d3Render();
     }
-
+    
     componentDidUpdate() {
-        this.d3Render(this.getRenderType());
+        this.d3Render();
     }
 
     shouldComponentUpdate(nextProps) {
         return treeSelector(nextProps) !== this.computedTree;
     }
-
-
-    getRenderType() {
-        if (!this.previousRoot) return RENDER_NEW_DATA;
-        const root = this.nodeIndex.get(this.root.data.name);
-        const previousRoot = this.nodeIndex.get(this.previousRoot.data.name);
-
-        if (!root || !previousRoot) return RENDER_NEW_DATA;
-
-        if (root.ancestors().slice(1).findIndex(ancestor => ancestor.data === previousRoot.data) > -1) return RENDER_CHILD_DATA;
-        if (previousRoot.ancestors().findIndex(ancestor => ancestor.data === root.data) > -1) return RENDER_PARENT_DATA;
-        return RENDER_NEW_DATA;
-    }
-
-
 
     render() {
         const {width, height} = this.props;
@@ -254,7 +218,20 @@ class TimeTreeD3 extends Component {
 const defaultNodeRenderer = () => <circle r="4"/>;
 
 TimeTreeD3.defaultProps = {
-    nodeRenderer: defaultNodeRenderer
+    nodeRenderer: defaultNodeRenderer,
+    transition: {
+        enter: {
+            wait: 0,
+            duration: 0
+        },
+        update: {
+            wait: 0,
+            duration: 0
+        },
+        exit: {
+            wait: 0, duration: 0
+        }
+    }
 };
 
 
