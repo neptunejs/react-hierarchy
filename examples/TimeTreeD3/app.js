@@ -44,18 +44,33 @@ class App extends Component {
             data: createData(initialValue),
             startDate: null,
             endDate: null,
-            minimumChildren: 0
+            minimumChildren: 0,
+            hovered: null
         };
     }
 
     render() {
+
+        const HoverRenderer = (BaseRenderer) => {
+            return (props) => {
+                return (
+                    <g
+                        onMouseEnter={() => this.setState({hovered: props.data})}
+                        onMouseLeave={() => this.setState({hovered: null})}
+                    >
+                        <BaseRenderer {...props} />
+                    </g>
+                );
+            }
+        };
+
         return (
             <div onDoubleClick={() => this.setState({data: createData(parseInt(this.state.value))})}>
                 <TimeTreeD3
-                    nodeRenderer={nodePieChartRenderer}
-                    rootRenderer={simpleRenderer}
-                    leafRenderer={nodeLabelRenderer}
                     onNodeClick={node => this.setState({data: node})}
+                    nodeRenderer={HoverRenderer(nodePieChartRenderer)}
+                    rootRenderer={HoverRenderer(simpleRenderer)}
+                    leafRenderer={HoverRenderer(nodeLabelRenderer)}
                     startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : null}
                     endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : null}
                     data={this.state.data}
@@ -74,8 +89,12 @@ class App extends Component {
                     onChange={this.changeEndDate.bind(this)}
                 />
                 <br/>
-                Minimum children: <input type="text" value={this.state.minimumChildren}
-                                         onChange={(e) => this.changeMinimumChildren(e.target.value)}/>
+                Minimum children: <input type="text" value={this.state.minimumChildren} onChange={(e) => this.changeMinimumChildren(e.target.value)} />
+                <div>
+                    <div>
+                        {renderInfo(this.state.hovered)}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -110,6 +129,16 @@ class App extends Component {
                 value
             });
         }
+    }
+}
+
+function renderInfo(node) {
+    if (node) {
+        return (
+            <h2>
+                Hovered node: {node.data.name}
+            </h2>
+        );
     }
 }
 

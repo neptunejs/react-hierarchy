@@ -260,8 +260,8 @@ class TimeTreeD3 extends Component {
         this.root = data;
         this.updateTree();
 
-        const beginTime = this.root.data.time;
-        const endTime = this.processed.leaf.data.time;
+        const beginTimeScale = this.root.data.time;
+        const endTimeScale = this.processed.leaf.data.time;
 
         return (
             <svg width={width} height={height} viewBox="0 0 1000 1100"
@@ -272,8 +272,8 @@ class TimeTreeD3 extends Component {
                     <g className="nodes" />
                 </svg>
                 <svg x="0" y="1050" width="1000" height="50" viewBox="0 0 1000 50">
-                    <TimeAxis position="bottom" beginTime={beginTime}
-                              endTime={endTime}
+                    <TimeAxis position="bottom" beginTime={beginTimeScale}
+                              endTime={endTimeScale}
                               width={1000} height={50}
                     />
                 </svg>
