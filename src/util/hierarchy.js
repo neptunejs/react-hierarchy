@@ -22,26 +22,16 @@ export function children(node, predicate, options) {
 export function truncate(node, predicate) {
     // beforeEach so that when the predicate is met
     // we don't traverse the removed children
+    node = node.copy();
     node.eachBefore(function (node) {
         if (predicate(node)) {
-            if (node.children && !node._children)
-                node._children = node.children;
             node.children = null;
         }
     });
+
+    return node;
 }
 
-// Restores children removed with truncate
-export function untruncate(node) {
-    const children = module.exports.children(node, node => node._children && !node.children, {
-        depth: 'first'
-    });
-    children.forEach(function (node) {
-        node.children = node._children;
-        node._children = null;
-    });
-    return children;
-}
 
 export function minimumChildren(node, minChildren) {
     const root = node.copy();

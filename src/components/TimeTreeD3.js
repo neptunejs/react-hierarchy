@@ -8,7 +8,6 @@ import {hierarchy as d3Hierarchy} from 'd3-hierarchy';
 import ReactDOM from 'react-dom';
 
 import {
-    untruncate,
     truncate,
     children as childrenHierarchy,
     NODE_TYPES,
@@ -28,9 +27,7 @@ class TimeTreeD3 extends Component {
         super(props);
         this.previousRoot = null;
         this.root = null;
-        this.state = {
-            clickedNode: null
-        };
+        this.shouldCreateTree = true;
     }
 
     d3Render(renderType) {
@@ -123,7 +120,7 @@ class TimeTreeD3 extends Component {
                 .attr('y2', node => node.realY);
         };
 
-        const d3Links = select(svg).select('#links')
+        const d3Links = select(svg).select('.links')
             .selectAll('g.link')
             .data(links, link => link.data.name);
 
@@ -153,7 +150,7 @@ class TimeTreeD3 extends Component {
             .remove();
 
 
-        const gCircle = select(svg).select('#nodes')
+        const gCircle = select(svg).select('.nodes')
             .selectAll('g.node')
             .data(nodes, node => node.data.name);
 
@@ -171,11 +168,7 @@ class TimeTreeD3 extends Component {
 
 
         circles = circles.append('g')
-            .on('click', d => {
-                this.setState({
-                    clickedNode: d
-                });
-            });
+            .on('click', this.props.onNodeClick);
 
 
         updateCircle(circles);
@@ -200,6 +193,12 @@ class TimeTreeD3 extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.data !== nextProps.data) this.buildNodeIndex(nextProps.data);
+        const props = ['data', 'startTime', 'endTime', 'minimumChildren'];
+        this.shouldCreateTree = props.some(p => {
+            const r = nextProps[p] !== this.props[p];
+            if(r) console.log('prop that changed', p);
+            return r;
+        });
     }
 
     componentDidMount() {
@@ -218,57 +217,59 @@ class TimeTreeD3 extends Component {
 
         if (!root || !previousRoot) return RENDER_NEW_DATA;
 
-        if (root.ancestors().slice(1).indexOf(previousRoot) > -1) return RENDER_CHILD_DATA;
-        if (previousRoot.ancestors().indexOf(root) > -1) return RENDER_PARENT_DATA;
+        if (root.ancestors().slice(1).findIndex(ancestor => ancestor.data === previousRoot.data) > -1) return RENDER_CHILD_DATA;
+        if (previousRoot.ancestors().findIndex(ancestor => ancestor.data === root.data) > -1) return RENDER_PARENT_DATA;
         return RENDER_NEW_DATA;
+    }
+
+    updateTree() {
+        if (this.shouldCreateTree || this.previousRoot !== this.root) {
+            if (this.props.minimumChildren) {
+                this.root = minimumChildren(this.root, this.props.minimumChildren);
+            }
+            if (this.props.endTime) {
+                this.root = truncate(this.root, node => node.data.time > this.props.endTime);
+            }
+
+
+            if (this.props.startTime) {
+                let children = childrenHierarchy(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
+                this.root = d3Hierarchy({
+                    data: {
+                        name: 'start node',
+                        time: this.props.startTime,
+                        fakeRoot: true
+                    },
+                    children: children
+                });
+
+                // Normalize the hierarchy, since it was built from Node instances
+                this.root.eachBefore(node => node.data = node.data.data);
+            }
+
+            this.processed = processData(this.root);
+        }
     }
 
 
     render() {
         const {width, height} = this.props;
         let {data} = this.props;
-        if (this.props.minimumChildren) {
-            data = minimumChildren(data, this.props.minimumChildren);
-        }
+
         this.previousRoot = this.root;
-        this.root = findRootNode(data, this.state.clickedNode);
-        untruncate(this.previousRoot);
-        if (this.props.endTime) {
-            truncate(this.root, node => node.data.time > this.props.endTime);
-        }
-
-
-        if (this.props.startTime) {
-            let children = childrenHierarchy(this.root, node => node.data.time > this.props.startTime, {depth: 'first'});
-            this.root = d3Hierarchy({
-                data: {
-                    name: 'start node',
-                    time: this.props.startTime,
-                    fakeRoot: true
-                },
-                children: children
-            });
-
-            // Normalize the hierarchy, since it was built from Node instances
-            this.root.eachBefore(node => node.data = node.data.data);
-        }
-
-        this.processed = processData(this.root);
-
+        this.root = data;
+        this.updateTree();
 
         const beginTime = this.root.data.time;
         const endTime = this.processed.leaf.data.time;
 
         return (
             <svg width={width} height={height} viewBox="0 0 1000 1100"
-                 onDoubleClick={() => this.setState({
-                     clickedNode: this.props.data
-                 })}
                  xmlns="http://www.w3.org/2000/svg" style={{overflow: 'visible'}}>
                 <svg x="0" y="25" width="1000" height="1000"
                      viewBox="0 0 1000 1000" style={{overflow: 'visible'}} ref="svgTree">
-                    <g id="links" />
-                    <g id="nodes" />
+                    <g className="links" />
+                    <g className="nodes" />
                 </svg>
                 <svg x="0" y="1050" width="1000" height="50" viewBox="0 0 1000 50">
                     <TimeAxis position="bottom" beginTime={beginTime}
@@ -338,15 +339,6 @@ function getRootAndLeaf(data) {
     return {root, leaf: mostRecentLeaf};
 }
 
-function findRootNode(data, clickedNode) {
-    if (clickedNode === null) return data;
-    let found = false;
-    data.each(node => {
-        if (node.data === clickedNode.data) found = true;
-    });
-    if (found) return clickedNode;
-    return data;
-}
 
 const defaultNodeRenderer = () => <circle r="4"/>;
 

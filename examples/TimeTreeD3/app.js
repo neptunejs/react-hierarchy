@@ -8,11 +8,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import PieChart from './PieChart';
 
 var slices = [
-    { color: '#468966', value: 10 },
-    { color: '#FFF0A5', value: 20 },
-    { color: '#FFB03B', value: 30 },
-    { color: '#B64926', value: 40 },
-    { color: '#8E2800', value: 50 },
+    {color: '#468966', value: 10},
+    {color: '#FFF0A5', value: 20},
+    {color: '#FFB03B', value: 30},
+    {color: '#B64926', value: 40},
+    {color: '#8E2800', value: 50},
 ];
 
 const initialValue = 0;
@@ -50,11 +50,12 @@ class App extends Component {
 
     render() {
         return (
-            <div>
+            <div onDoubleClick={() => this.setState({data: createData(parseInt(this.state.value))})}>
                 <TimeTreeD3
                     nodeRenderer={nodePieChartRenderer}
                     rootRenderer={simpleRenderer}
                     leafRenderer={nodeLabelRenderer}
+                    onNodeClick={node => this.setState({data: node})}
                     startTime={this.state.startDate ? this.state.startDate.unix() * 1000 : null}
                     endTime={this.state.endDate ? this.state.endDate.unix() * 1000 : null}
                     data={this.state.data}
@@ -73,7 +74,8 @@ class App extends Component {
                     onChange={this.changeEndDate.bind(this)}
                 />
                 <br/>
-                Minimum children: <input type="text" value={this.state.minimumChildren} onChange={(e) => this.changeMinimumChildren(e.target.value)} />
+                Minimum children: <input type="text" value={this.state.minimumChildren}
+                                         onChange={(e) => this.changeMinimumChildren(e.target.value)}/>
             </div>
         );
     }
