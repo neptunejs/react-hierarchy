@@ -21,11 +21,11 @@
     "scripts": {
         "compile": "babel src --out-dir lib --ignore __tests__ --quiet",
         "compile-es6": "BABEL_ENV=es6 babel src --out-dir lib-es6 --ignore __tests__ --quiet",
-        "start": "webpack-dev-server --inline",
-        "test": "run-s testonly eslint",
         "eslint": "eslint src examples",
         "eslint-fix": "eslint --fix src",
         "prepare": "run-p compile compile-es6",
+        "start": "webpack-dev-server --inline",
+        "test": "run-s testonly eslint",
         "testonly": "jest"
     },
     "peerDependencies": {
