@@ -10,7 +10,7 @@ import {
     getNodeType
 } from './util/hierarchy';
 
-const defaultNodeRenderer = () => <circle r="4"/>;
+const defaultNodeRenderer = () => <circle r="4" />;
 
 class Hierarchy extends Component {
     constructor(props) {
@@ -41,7 +41,7 @@ class Hierarchy extends Component {
             return el.select(function (d) {
                 let Renderer = that.props.nodeRenderer;
                 const nodeType = getNodeType(d);
-                switch(nodeType) {
+                switch (nodeType) {
                     case NODE_TYPES.ROOT:
                     case NODE_TYPES.FAKE_ROOT:
                         Renderer = that.props.rootRenderer || Renderer;

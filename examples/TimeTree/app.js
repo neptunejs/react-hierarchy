@@ -23,20 +23,20 @@ const initialValue = 0;
 const nodeLabelRenderer = props => {
     return (
         <g>
-            <circle r="4"/>
+            <circle r="4" />
             <text x="5" y="0" transform="rotate(-45)">{props.data.data.name}</text>
         </g>
     );
 };
 
-const simpleRenderer = () => <circle r="4"/>;
+const simpleRenderer = () => <circle r="4" />;
 
-const nodePieChartRenderer = props => {
+const nodePieChartRenderer = () => {
     return (
         <g>
-            <PieChart size={20} slices={slices}/>
+            <PieChart size={20} slices={slices} />
         </g>
-    )
+    );
 };
 
 class App extends Component {
@@ -64,11 +64,11 @@ class App extends Component {
                         <BaseRenderer {...props} />
                     </g>
                 );
-            }
+            };
         };
 
         return (
-            <div onDoubleClick={event => {
+            <div onDoubleClick={() => {
                 this.setState({
                     data: createData(parseInt(this.state.value)),
                     transition: {
@@ -98,8 +98,8 @@ class App extends Component {
                     minimumChildren={this.state.minimumChildren}
                     transition={this.state.transition}
                 />
-                <br/>
-                <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)}/>
+                <br />
+                <input type="text" value={this.state.value} onChange={(e) => this.changeValue(e.target.value)} />
                 <DatePicker
                     selected={this.state.startDate}
                     onChange={this.changeStartDate.bind(this)}
@@ -108,7 +108,7 @@ class App extends Component {
                     selected={this.state.endDate}
                     onChange={this.changeEndDate.bind(this)}
                 />
-                <br/>
+                <br />
                 Minimum children: <input type="text" value={this.state.minimumChildren} onChange={(e) => this.changeMinimumChildren(e.target.value)} />
                 <div>
                     <div>
@@ -128,13 +128,13 @@ class App extends Component {
     changeStartDate(value) {
         this.setState({
             startDate: value
-        })
+        });
     }
 
     changeEndDate(value) {
         this.setState({
             endDate: value
-        })
+        });
     }
 
     changeValue(value) {
@@ -160,6 +160,7 @@ function renderInfo(node) {
             </h2>
         );
     }
+    return null;
 }
 
 ReactDOM.render(

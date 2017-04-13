@@ -3,13 +3,15 @@
 export function children(node, predicate, options) {
     const nodes = [node], match = [];
     let children, i;
-    while (node = nodes.pop()) {
+    while ((node = nodes.pop())) {
         children = node.children;
         const isMatch = predicate(node);
-        if (children && shouldGoDeeper(node, options, isMatch)) for (i = children.length - 1; i >= 0; --i) {
-            nodes.push(children[i]);
+        if (children && shouldGoDeeper(node, options, isMatch)) {
+            for (i = children.length - 1; i >= 0; --i) {
+                nodes.push(children[i]);
+            }
         }
-        if(isMatch) {
+        if (isMatch) {
             match.push(node);
         }
 
@@ -52,12 +54,12 @@ export const NODE_TYPES = {
 };
 
 export function getNodeType(node) {
-    if(node.fakeRoot) {
-        return NODE_TYPES.FAKE_ROOT
-    } else if(node.parent === null) {
+    if (node.fakeRoot) {
+        return NODE_TYPES.FAKE_ROOT;
+    } else if (node.parent === null) {
         return NODE_TYPES.ROOT;
-    } else if(!node.children || node.children.length === 0) {
-        return NODE_TYPES.LEAF
+    } else if (!node.children || node.children.length === 0) {
+        return NODE_TYPES.LEAF;
     } else {
         return NODE_TYPES.INTERMEDIATE;
     }
@@ -65,10 +67,10 @@ export function getNodeType(node) {
 
 
 function shouldGoDeeper(node, options, isMatch) {
-    if(options.depth !== undefined) {
-        if(typeof options.depth === 'number') {
+    if (options.depth !== undefined) {
+        if (typeof options.depth === 'number') {
             return options.depth < node.depth || node.depth == null;
-        } else if(options.depth === 'first') {
+        } else if (options.depth === 'first') {
             return !isMatch;
         }
     }

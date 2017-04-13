@@ -1,4 +1,3 @@
-'use strict';
 
 import {createSelector} from 'reselect';
 import flexTree from 'd3-flextree-v4';
@@ -102,7 +101,6 @@ function processData(data) {
     });
 
 
-
     const beginTime = root.data.time;
     const endTime = leaf.data.time;
 
@@ -118,7 +116,6 @@ function processData(data) {
         node.realY = scaleX(node.x);
         node.realX = scale(node.data.time);
     });
-
 
 
     return {root, leaf};

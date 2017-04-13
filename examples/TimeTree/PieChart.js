@@ -28,8 +28,9 @@ import React from 'react';
 const {PropTypes} = React;
 
 /**
- * @param {Object[]} slices
- * @return {Object[]}
+ * @param {object[]} slices
+ * @param {object} [options]
+ * @return {object[]}
  */
 function renderPaths(slices, options) {
     const total = slices.reduce((totalValue, {value}) => totalValue + value, 0);
@@ -53,7 +54,7 @@ function renderPaths(slices, options) {
         }
 
         if (value === 0) {
-            return;
+            return null;
         }
 
         const valuePercentage = value / total;
@@ -82,7 +83,7 @@ function renderPaths(slices, options) {
         lastX = nextX;
         lastY = nextY;
 
-        return <path d={d} fill={color} key={index}/>;
+        return <path d={d} fill={color} key={index} />;
     });
 }
 
@@ -91,15 +92,12 @@ function renderPaths(slices, options) {
  * @see {http://wiki.scribus.net/canvas/Making_a_Pie_Chart}
  */
 export default class PieChart extends React.Component {
-    /**
-     * @return {Object}
-     */
     render() {
         const size = this.props.size;
         const options = {
             radCircumference: Math.PI * 2,
             center: Math.floor(size / 2),
-            radius: Math.floor(size / 2) -1
+            radius: Math.floor(size / 2) - 1
         };
         return (
             <g transform={`translate(${-options.center},${-options.center}) rotate(-90 ${options.center} ${options.center})`}>
@@ -111,7 +109,7 @@ export default class PieChart extends React.Component {
 
 PieChart.defaultProps = {
     size: 20
-}
+};
 
 PieChart.propTypes = {
     slices: PropTypes.arrayOf(PropTypes.shape({
