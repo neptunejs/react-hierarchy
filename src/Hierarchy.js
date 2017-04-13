@@ -3,14 +3,16 @@ import {TimeAxis} from 'react-axis';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import ReactDOM from 'react-dom';
-import {treeSelector} from '../selector';
+import {treeSelector} from './selector';
 
 import {
     NODE_TYPES,
     getNodeType
-} from '../util/hierarchy';
+} from './util/hierarchy';
 
-class TimeTreeD3 extends Component {
+const defaultNodeRenderer = () => <circle r="4"/>;
+
+class Hierarchy extends Component {
     constructor(props) {
         super(props);
         this.previousRoot = null;
@@ -155,7 +157,7 @@ class TimeTreeD3 extends Component {
         this.buildNodeIndex(this.props.data);
         this.d3Render();
     }
-    
+
     componentDidUpdate() {
         this.d3Render();
     }
@@ -193,9 +195,7 @@ class TimeTreeD3 extends Component {
     }
 }
 
-const defaultNodeRenderer = () => <circle r="4"/>;
-
-TimeTreeD3.defaultProps = {
+Hierarchy.defaultProps = {
     nodeRenderer: defaultNodeRenderer,
     transition: {
         enter: {
@@ -213,4 +213,4 @@ TimeTreeD3.defaultProps = {
 };
 
 
-export default TimeTreeD3;
+export default Hierarchy;

@@ -1,22 +1,23 @@
 {
-    "name": "time-hierarchy",
+    "name": "react-hierarchy",
     "version": "0.0.0",
     "description": "",
-    "homepage": "",
+    "homepage": "https://github.com/neptunjs/react-hierarchy",
     "author": {
         "name": "Michaël Zasso",
-        "email": "targos@protonmail.com",
-        "url": ""
+        "email": "targos@protonmail.com"
     },
     "files": [
         "lib",
         "lib-es6"
     ],
     "main": "lib/index.js",
-    "keywords": [
-        ""
-    ],
     "module": "lib-es6/index.js",
+    "keywords": [
+        "react",
+        "hierarchy",
+        "d3"
+    ],
     "scripts": {
         "compile": "babel src --out-dir lib --ignore __tests__ --quiet",
         "compile-es6": "BABEL_ENV=es6 babel src --out-dir lib-es6 --ignore __tests__ --quiet",

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
 import createData from '../../tools/createData';
-import TimeTreeD3 from '../../src/components/TimeTreeD3';
+import {Hierarchy} from '../../src';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PieChart from './PieChart';
@@ -78,7 +78,7 @@ class App extends Component {
                     }
                 });
             }}>
-                <TimeTreeD3
+                <Hierarchy
                     onNodeClick={node => this.setState({
                         data: node,
                         transition: {

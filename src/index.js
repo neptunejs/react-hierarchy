@@ -1,4 +1,3 @@
-import TimeTree from './components/TimeTree';
-import TimeTreeD3 from './components/TimeTreeD3';
+import Hierarchy from './Hierarchy';
 
-export {TimeTree, TimeTreeD3};
+export {Hierarchy};

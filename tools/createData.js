@@ -2,7 +2,7 @@ import {stratify} from 'd3-hierarchy';
 import euclideanDistance from 'ml-distance-euclidean';
 import distanceMatrix from 'ml-distance-matrix';
 
-import fixedData from '../data.json';
+import fixedData from './data.json';
 
 export default function createData(n = 10) {
 
@@ -29,12 +29,10 @@ export default function createData(n = 10) {
         distance = distanceMatrix(data.map(el => el.value), euclideanDistance);
     }
 
-    const hierarchy = stratify()
+    return stratify()
         .id(el => el.name)
         .parentId(getParentId)
         (data);
-
-    return hierarchy;
 
     function getParentId(el, idx, data) {
         if (idx === 0) return null;
