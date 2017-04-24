@@ -163,7 +163,16 @@ class Hierarchy extends Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        return treeSelector(nextProps) !== this.computedTree;
+        return (
+            this.props.nodeRenderer !== nextProps.nodeRenderer ||
+            this.props.rootRenderer !== nextProps.rootRenderer ||
+            this.props.leafRenderer !== nextProps.leafRenderer ||
+            this.props.onNodeClick !== nextProps.onNodeClick ||
+            this.props.transition !== nextProps.transition ||
+            this.props.width !== nextProps.width ||
+            this.props.height !== nextProps.height ||
+            treeSelector(nextProps) !== this.computedTree
+        );
     }
 
     render() {
