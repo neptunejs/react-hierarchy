@@ -35,7 +35,7 @@
     "devDependencies": {
         "babel-cli": "^6.24.0",
         "babel-core": "^6.24.0",
-        "babel-loader": "^6.4.1",
+        "babel-loader": "^7.0.0",
         "babel-preset-env": "^1.2.2",
         "babel-preset-react": "^6.23.0",
         "css-loader": "^0.28.0",
@@ -64,7 +64,7 @@
         "d3-selection": "^1.0.5",
         "d3-transition": "^1.0.4",
         "react-axis": "^0.2.2",
-        "react-datepicker": "^0.44.0",
+        "react-datepicker": "^0.46.0",
         "reselect": "^3.0.0"
     }
 }
