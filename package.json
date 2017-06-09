@@ -45,6 +45,7 @@
         "eslint-config-neptun-react": "^1.0.1",
         "eslint-plugin-no-only-tests": "^1.1.0",
         "eslint-plugin-react": "^7.0.1",
+        "jest": "^20.0.4",
         "ml-distance-euclidean": "^1.0.0",
         "ml-distance-matrix": "^1.0.0",
         "npm-run-all": "^4.0.2",
@@ -62,7 +63,6 @@
         "d3-scale": "^1.0.5",
         "d3-selection": "^1.0.5",
         "d3-transition": "^1.0.4",
-        "jest": "^20.0.4",
         "react-axis": "^0.2.2",
         "react-datepicker": "^0.47.0",
         "reselect": "^3.0.0"
