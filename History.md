@@ -1,3 +1,13 @@
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/neptunjs/time-hierarchy/compare/v0.1.2...v0.1.3) (2017-06-09)
+
+
+### Bug Fixes
+
+* jest should be a dev dependency ([139b4b9](https://github.com/neptunjs/time-hierarchy/commit/139b4b9))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/neptunjs/time-hierarchy/compare/v0.1.1...v0.1.2) (2017-06-09)
 
