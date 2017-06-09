@@ -1,7 +1,8 @@
 // Traverse hierarchy, returning all nodes predicate return truthy for
 // options: traverse until given depth
 export function children(node, predicate, options) {
-    const nodes = [node], match = [];
+    const nodes = [node];
+    const match = [];
     let children, i;
     while ((node = nodes.pop())) {
         children = node.children;
