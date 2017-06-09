@@ -18,7 +18,7 @@ export const treeSelector = createSelector([
     getData, startTime, endTime, minChildren
 ], (data, startTime, endTime, minChildren) => {
     let root = data;
-    if (minimumChildren) {
+    if (minChildren) {
         root = minimumChildren(root, minChildren);
     }
     if (endTime) {
