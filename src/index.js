@@ -1,3 +1,3 @@
 import Hierarchy from './Hierarchy';
 
-export {Hierarchy};
+export { Hierarchy };
