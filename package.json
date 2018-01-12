@@ -19,6 +19,8 @@
     "d3"
   ],
   "scripts": {
+    "build": "webpack",
+    "deploy": "npm run build && gh-pages -d examples",
     "compile": "babel src --out-dir lib --ignore __tests__ --quiet",
     "compile-es6": "BABEL_ENV=es6 babel src --out-dir lib-es6 --ignore __tests__ --quiet",
     "eslint": "eslint src examples tools",
@@ -42,6 +44,7 @@
     "eslint-config-neptune-react": "^2.3.1",
     "eslint-plugin-jest": "^21.6.1",
     "eslint-plugin-react": "^7.0.1",
+    "gh-pages": "^1.1.0",
     "jest": "^22.0.6",
     "ml-distance-euclidean": "^1.0.0",
     "ml-distance-matrix": "^1.0.0",
